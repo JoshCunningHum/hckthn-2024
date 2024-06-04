@@ -16,6 +16,7 @@ const {
     finished?: boolean;
     text?: string;
     noCenter?: boolean;
+    noFill?: boolean;
 }>();
 </script>
 
@@ -29,6 +30,7 @@ const {
         name="loader"
     >
         <Fill
+            v-if="!noFill"
             :center="!noCenter"
             :="$attrs"
         >
@@ -37,6 +39,11 @@ const {
                 no-ellipsis
             />
         </Fill>
+        <Loading
+            v-else
+            :data="text"
+            no-ellipsis
+        />
     </slot>
 </template>
 
