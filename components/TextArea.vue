@@ -15,9 +15,7 @@ const {
     label?: string;
     hint?: string;
     disabled?: boolean;
-    icon?: string;
     name?: string;
-    size?: "large" | "small";
     loading?: boolean;
     noFloat?: boolean;
 }>();
@@ -37,43 +35,23 @@ onMounted(() => set(componentid, genid()));
 
 <template>
     <div class="flex flex-col">
-        <template v-if="!!icon">
-            <IconField
-                icon-position="left"
-                class="w-full"
-            >
-                <InputIcon :class="`pi ${icon}`" />
-                <PrimeInputText
-                    v-model="modelValue"
-                    class="w-full"
-                    :name="name"
-                    :size="size"
-                    :id="componentid + 'input'"
-                    :aria-describedby="componentid + 'hint'"
-                    :disabled="disabled"
-                    :placeholder="label"
-                />
-            </IconField>
-        </template>
-        <template v-else-if="noFloat">
-            <PrimeInputText
+        <template v-if="noFloat">
+            <PrimeTextarea
                 v-model="modelValue"
                 :name="name"
-                :size="size"
-                :id="componentid + 'input'"
+                :id="componentid + 'input-ta'"
                 :aria-describedby="componentid + 'hint'"
                 :disabled="disabled"
                 :placeholder="label"
             />
         </template>
         <template v-else>
-            <FloatLabel class="w-full">
+            <FloatLabel class="w-full mt-6">
                 <PrimeInputText
                     class="w-full"
                     v-model="modelValue"
-                    :size="size"
                     :name="name"
-                    :id="componentid + 'input'"
+                    :id="componentid + 'input-ta'"
                     :aria-describedby="componentid + 'hint'"
                     :disabled="disabled"
                     :placeholder="label"

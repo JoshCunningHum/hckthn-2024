@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 const { name } = defineProps<{
     name: string;
+    label?: string;
 }>();
 
 const errors = inject<Record<string, string>>("form-errors");
@@ -11,6 +12,7 @@ provide("form-name", name);
 
 <template>
     <div class="flex flex-col gap-1">
+        <small v-if="!!label">{{ label }}</small>
         <slot></slot>
         <small
             class="text-red-400 text-sm"

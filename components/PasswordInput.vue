@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { set } from "@vueuse/core";
 import FloatLabel from "primevue/floatlabel";
+import IconField from "primevue/iconfield";
+import InputIcon from "primevue/inputicon";
 
 const modelValue = defineModel<string>();
 
@@ -15,6 +17,7 @@ const {
     feedback?: boolean;
     disabled?: boolean;
     name?: string;
+    icon?: string;
     size?: "large" | "small";
 }>();
 
@@ -33,7 +36,39 @@ onMounted(() => set(componentid, genid()));
 
 <template>
     <div class="flex flex-col">
+        <IconField
+            v-if="!!icon"
+            icon-position="left"
+            class="w-full"
+        >
+            <InputIcon :class="`pi ${icon}`" />
+            <PrimePassword
+                v-model="modelValue"
+                :name="name"
+                :size="size"
+                :id="componentid + 'input'"
+                :aria-describedby="componentid + 'hint'"
+                :disabled="disabled"
+                :placeholder="label"
+                toggle-mask
+                :feedback="feedback"
+                class="w-full"
+                :pt="{
+                    showIcon: () => ({ class: 'cursor-pointer' }),
+                    hideIcon: () => ({ class: 'cursor-pointer' }),
+                    root(options) {
+                        return {
+                            class: 'w-full flex-grow',
+                        };
+                    },
+                    input: {
+                        root: () => ({ class: 'w-full' }),
+                    },
+                }"
+            />
+        </IconField>
         <PrimePassword
+            v-else
             v-model="modelValue"
             :name="name"
             :size="size"
@@ -43,6 +78,19 @@ onMounted(() => set(componentid, genid()));
             :placeholder="label"
             toggle-mask
             :feedback="feedback"
+            class="w-full"
+            :pt="{
+                showIcon: () => ({ class: 'cursor-pointer' }),
+                hideIcon: () => ({ class: 'cursor-pointer' }),
+                root(options) {
+                    return {
+                        class: 'w-full flex-grow',
+                    };
+                },
+                input: {
+                    root: () => ({ class: 'w-full' }),
+                },
+            }"
         />
         <small
             v-if="!!hint"
