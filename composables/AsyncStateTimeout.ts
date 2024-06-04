@@ -31,5 +31,8 @@ export const useAsyncStateTimeout = <
         options
     );
 
-    return asyncstatereturn;
+    const { execute: executeWithDelay, ...others } = asyncstatereturn;
+    const execute = (...args: Params) => executeWithDelay(0, ...args);
+
+    return { ...asyncstatereturn, execute, executeWithDelay };
 };
