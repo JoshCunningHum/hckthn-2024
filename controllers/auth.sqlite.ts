@@ -1,4 +1,4 @@
-import type { User } from "~/schemas/user";
+import type { InsertUser, User } from "~/schemas/user";
 
 //#region Login
 
@@ -8,14 +8,11 @@ export type LoginResponse =
       }
     | User;
 
-export type LoginParams = {
-    username: string;
-    password: string;
-};
+export type LoginParams = User;
 
 export type LoginHandler = (param: LoginParams) => Promise<LoginResponse>;
 
-export const login: LoginHandler = async ({ password, username }) => {
+export const login: LoginHandler = async ({ password, email }) => {
     throw new Error(`Not implemented yet`);
 };
 
@@ -27,20 +24,12 @@ export type RegisterResponse =
       }
     | User;
 
-export type RegisterParams = {
-    username: string;
-    password: string;
-    email: string;
-};
+export type RegisterParams = InsertUser;
 
 export type RegisterHandler = (
     param: RegisterParams
 ) => Promise<RegisterResponse>;
 
-export const register: RegisterHandler = async ({
-    email,
-    password,
-    username,
-}) => {
+export const register: RegisterHandler = async (params) => {
     throw new Error(`Not implemented yet`);
 };

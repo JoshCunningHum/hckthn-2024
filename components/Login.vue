@@ -48,7 +48,7 @@ const onSuccess = (u: User) => {
     });
     emits("success", {
         password: u.password,
-        username: u.username,
+        email: u.email,
     });
     loginsession(u);
     router.push(redirect);
@@ -88,7 +88,7 @@ provide("form-loading", isLoading);
 <template>
     <PrimePanel
         header="Login"
-        class="dmsans bg-opacity-70 bg-stone-900 max-w-fit"
+        class="dmsans bg-opacity-70 bg-section max-w-fit"
     >
         <DynamicForm
             :schema="schema"
@@ -96,8 +96,8 @@ provide("form-loading", isLoading);
             @submit="submit"
             submit-label="Login"
             :field-data="{
-                username: {
-                    icon: 'pi-user',
+                email: {
+                    icon: 'pi-envelope',
                 },
                 password: {
                     type: 'password',

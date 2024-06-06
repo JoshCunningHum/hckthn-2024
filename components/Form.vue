@@ -13,6 +13,7 @@ const { state, schema, disabled } = toRefs(props);
 interface ScopeProps {
     reset: () => void;
     errors: Partial<Record<string, string | undefined>>;
+    validateField: typeof validateField;
 }
 
 const slots = defineSlots<{
@@ -25,10 +26,26 @@ const emits = defineEmits<{
     (e: "submit", event: State): void;
 }>();
 
-const { defineField, handleSubmit, resetForm, errors, setValues } = useForm({
+// Validation
+
+const {
+    defineField,
+    handleSubmit,
+    resetForm,
+    errors,
+    setValues,
+    validateField: _validateField,
+    setFieldValue,
+    setFieldError,
+    setErrors,
+} = useForm({
     validationSchema: schema,
     validateOnMount: false,
 });
+
+const validateField = async (field: string, value: any) => {
+    setFieldValue(field, value, true);
+};
 
 const disabledforms = computed(() => disabled.value);
 
@@ -36,7 +53,9 @@ provide("form-errors", errors);
 provide("form-disabled", disabledforms);
 
 const _fields = computed(() => Object.keys(schema.value.fields));
-const fields = useArrayMap(_fields, (f) => defineField(f));
+const fields = useArrayMap(_fields, (f) => {
+    defineField(f);
+});
 
 const onSubmit = handleSubmit((values) => {
     emits("submit", values as State);
@@ -49,7 +68,9 @@ const onSubmitNoValidation = (event: Event) => {
     onSubmit(event);
 };
 
-onMounted(() => resetForm(undefined, { force: true }));
+onMounted(() => {
+    setErrors({});
+});
 </script>
 
 <template>
@@ -57,6 +78,7 @@ onMounted(() => resetForm(undefined, { force: true }));
         <slot
             :reset="resetForm"
             :errors="errors"
+            :validateField="validateField"
         ></slot>
     </form>
 </template>

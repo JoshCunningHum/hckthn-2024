@@ -3,10 +3,7 @@ const router = useRouter();
 </script>
 
 <template>
-    <Fill
-        class="bg-stone-900 dmsans"
-        center
-    >
+    <Fill class="bg-ground dmsans md:items-center md:justify-center">
         <Register
             @success="router.push('/login')"
             login="/login"

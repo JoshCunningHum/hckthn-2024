@@ -5,6 +5,7 @@
 >
 import * as yup from "yup";
 //#region Form Copied Properties
+// MARK: This is imporant!
 
 export type OptionFieldData =
     | string[]
@@ -19,7 +20,7 @@ export type FieldOption = {
     class?: string;
 } & (
     | {
-          type?: "text" | "password" | "textarea";
+          type?: "text" | "password" | "textarea" | "number";
       }
     | {
           type: "select";
@@ -80,6 +81,7 @@ interface FieldProps<Type, Property extends keyof Type> {
     state: Type[Property];
     error?: string;
     set: (v: Type[Property]) => void;
+    validate: () => void;
 }
 
 type FieldMapped<Type> = {
@@ -93,11 +95,19 @@ type GeneralFieldProp = {
     state: T[F];
     error?: string;
     set: (v: T[F]) => void;
+    validate: () => void;
+};
+
+type OverrideParams = {
+    state: T;
+    set: typeof setField;
+    errors: Partial<Record<string, string | undefined>>;
+    validate: (field: F) => void;
 };
 
 type SlotType = {
     actions(params: ActionProps): any;
-    override(): any;
+    override(params: OverrideParams): any;
     field(params: GeneralFieldProp): any;
 } & FieldMapped<T>;
 const slots = defineSlots<SlotType>();
@@ -119,10 +129,16 @@ const setField = (field: F, value: any) => {
         :disabled="disabled || loading"
         class="flex flex-col gap-1"
         @submit="(v) => emits('submit', v)"
-        v-slot="{ errors }"
+        v-slot="{ errors, validateField }"
     >
         <!-- Auto Generate Forms using the schema -->
-        <slot name="override">
+        <slot
+            name="override"
+            :state="state"
+            :set="setField"
+            :validate="(f: F) => validateField(f, state[f])"
+            :errors="errors"
+        >
             <template
                 v-for="field in fields"
                 :key="field"
@@ -133,6 +149,7 @@ const setField = (field: F, value: any) => {
                     :state="state[field]"
                     :set="(v: any) => setField(field, v)"
                     :error="errors[field]"
+                    :validate="() => validateField(field, state[field])"
                 >
                     <slot
                         name="field"
@@ -143,6 +160,7 @@ const setField = (field: F, value: any) => {
                                 setField(field, v)
                         "
                         :error="errors[field]"
+                        :validate="() => validateField(field, state[field])"
                     >
                         <Field
                             :name="field"
@@ -195,7 +213,8 @@ const setField = (field: F, value: any) => {
                                             .icon) ||
                                     ''
                                 "
-                                v-model="state[field]"
+                                :model-value="state[field]"
+                                @update:model-value="(v) => setField(field, v)"
                                 no-float
                             />
                             <TextArea
@@ -216,7 +235,8 @@ const setField = (field: F, value: any) => {
                                               ).label) ||
                                           capitalize(field)
                                 "
-                                v-model="state[field]"
+                                :model-value="state[field]"
+                                @update:model-value="(v) => setField(field, v)"
                                 auto-resize
                                 no-float
                             />
@@ -227,7 +247,8 @@ const setField = (field: F, value: any) => {
                                     (props.fieldData[field] as FieldOption)
                                         .type === 'select'
                                 "
-                                v-model="state[field]"
+                                :model-value="state[field]"
+                                @update:model-value="(v) => setField(field, v)"
                                 :data="
                                     props.fieldData[field] as Extract<
                                         FieldOption,
@@ -243,7 +264,8 @@ const setField = (field: F, value: any) => {
                                     (props.fieldData[field] as FieldOption)
                                         .type === 'checkbox'
                                 "
-                                v-model="state[field]"
+                                :model-value="state[field]"
+                                @update:model-value="(v) => setField(field, v)"
                                 :data="
                                     props.fieldData[field] as Extract<
                                         FieldOption,
@@ -261,14 +283,22 @@ const setField = (field: F, value: any) => {
                                               props.fieldData[field]?.label) ||
                                           capitalize(field)
                                 "
-                                v-model="state[field]"
+                                :model-value="state[field]"
+                                @update:model-value="(v) => setField(field, v)"
                                 :icon="
                                     (props.fieldData &&
                                         props.fieldData[field] &&
                                         props.fieldData[field]?.icon) ||
                                     ''
                                 "
-                                no-float
+                                float
+                                :type="
+                                    props.fieldData &&
+                                    props.fieldData[field] &&
+                                    (props.fieldData[field]?.type as
+                                        | 'text'
+                                        | 'number')
+                                "
                             />
                         </Field>
                     </slot>

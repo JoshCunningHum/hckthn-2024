@@ -20,7 +20,7 @@ const { state, error, isLoading, isReady } = useAsyncStateTimeout(
 
 <template>
     <Fill
-        class="bg-stone-900 dmsans"
+        class="bg-ground dmsans"
         center
     >
         <Loader

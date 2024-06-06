@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { type LoginParams } from "../../controllers/auth.sqlite";
 
-const onlogin = ({ password, username }: LoginParams) => {
+const onlogin = ({ password, email }: LoginParams) => {
     // Refresh the page
     location.reload();
 };
@@ -9,7 +9,7 @@ const onlogin = ({ password, username }: LoginParams) => {
 
 <template>
     <Fill
-        class="bg-stone-900 dmsans"
+        class="bg-ground dmsans"
         center
     >
         <Login

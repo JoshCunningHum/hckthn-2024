@@ -3,6 +3,7 @@ import { definePageMeta } from "../.nuxt/typed-router/__definePageMeta";
 import { set, promiseTimeout } from "@vueuse/core";
 import * as yup from "yup";
 import { useAsyncStateTimeout } from "../composables/AsyncStateTimeout";
+import ToggleButton from "primevue/togglebutton";
 
 definePageMeta({
     // middleware: ["auth"],
@@ -29,7 +30,9 @@ const schema = yup.object({
         .string()
         .required(`Confirm pass is empty!!!!!`)
         .oneOf([yup.ref("password")], "Password does not match"),
-    subscribe: yup.bool(),
+    subscribe: yup.bool().oneOf([true], "Subscription should be true!"),
+    age: yup.number().required("Age is required"),
+    gender: yup.string().required("Gender is required").default(`Male`),
 });
 
 const {
@@ -63,16 +66,6 @@ const {
                         icon: 'pi-key',
                         type: 'password',
                     },
-                    confirmPassword: {
-                        type: 'select',
-                        options: [
-                            {
-                                label: 'This password is correct',
-                                value: 'This is not a password check',
-                            },
-                        ],
-                        label: 'Confirm Password',
-                    },
                     email: {
                         icon: 'pi-user',
                     },
@@ -80,9 +73,32 @@ const {
                         label: 'Subscribe to email service',
                         type: 'checkbox',
                     },
+                    gender: {
+                        type: 'select',
+                        options: ['Male', 'Female', 'Other'],
+                    },
+                    age: {
+                        type: 'number',
+                    },
                 }"
                 class="gap-2"
             >
+                <template #subscribe-field="{ state, set, validate, error }">
+                    <div>
+                        <ToggleButton
+                            :model-value="state"
+                            @update:model-value="
+                                (v: boolean) => {
+                                    set(!!v);
+                                    validate();
+                                }
+                            "
+                            onLabel="Subscribed"
+                            offLabel="Subscribe"
+                        />
+                        <div class="text-red-500 text-sm">{{ error }}</div>
+                    </div>
+                </template>
             </DynamicForm>
         </Fill>
     </Screen>

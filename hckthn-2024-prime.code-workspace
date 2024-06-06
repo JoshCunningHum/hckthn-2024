@@ -6,5 +6,7 @@
     ],
     "settings": {
         "material-icon-theme.activeIconPack": "vue_vuex",
+        "editor.minimap.showMarkSectionHeaders": true,
+        "editor.minimap.showRegionSectionHeaders": true,
     },
 }

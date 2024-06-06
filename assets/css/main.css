@@ -1,7 +1,33 @@
 html {
-    font-size: 14px;
+    font-size: 16px;
 }
 
 .dmsans {
     font-family: "DM Sans";
+}
+
+/* Prime Vue Colors */
+
+.bg-ground {
+    background-color: var(--surface-ground);
+}
+
+.bg-section {
+    background-color: var(--surface-section);
+}
+
+.bg-border {
+    background-color: var(--surface-border);
+}
+
+.bg-card {
+    background-color: var(--surface-card);
+}
+
+.bg-overlay {
+    background-color: var(--surface-overlay);
+}
+
+.bg-hover {
+    background-color: var(--surface-hover);
 }
