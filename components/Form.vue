@@ -39,7 +39,6 @@ const _fields = computed(() => Object.keys(schema.value.fields));
 const fields = useArrayMap(_fields, (f) => defineField(f));
 
 const onSubmit = handleSubmit((values) => {
-    console.log(`Submitted sheeesh`, values);
     emits("submit", values as State);
 });
 
@@ -49,6 +48,8 @@ const onSubmitNoValidation = (event: Event) => {
     // then submit
     onSubmit(event);
 };
+
+onMounted(() => resetForm(undefined, { force: true }));
 </script>
 
 <template>

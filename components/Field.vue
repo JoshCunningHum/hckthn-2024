@@ -4,7 +4,7 @@ const { name } = defineProps<{
     label?: string;
 }>();
 
-const errors = inject<Record<string, string>>("form-errors");
+const errors = inject<Record<string, string>>("form-errors", {});
 
 // provide the name
 provide("form-name", name);

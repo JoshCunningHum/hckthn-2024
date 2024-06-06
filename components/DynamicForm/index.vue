@@ -6,14 +6,33 @@
 import * as yup from "yup";
 //#region Form Copied Properties
 
-type FieldOption = {
-    icon?: string;
-    type?: "text" | "password" | "textarea";
-    label?: string;
-};
+export type OptionFieldData =
+    | string[]
+    | {
+          label: string;
+          value: any;
+      }[];
 
-type FieldData = {
-    [Property in keyof T]?: FieldOption;
+export type FieldOption = {
+    icon?: string;
+    label?: string;
+    class?: string;
+} & (
+    | {
+          type?: "text" | "password" | "textarea";
+      }
+    | {
+          type: "select";
+          options: OptionFieldData; // Make options a reuqired prop when type is select
+      }
+    | {
+          type: "checkbox";
+          label: string;
+      }
+);
+
+export type FieldData<Type> = {
+    [Property in keyof Type]?: FieldOption;
 };
 
 const props = withDefaults(
@@ -29,7 +48,7 @@ const props = withDefaults(
         resetLabel?: string;
 
         // Form
-        fieldData?: FieldData;
+        fieldData?: FieldData<T>;
         labeled?: boolean;
     }>(),
     {
@@ -131,9 +150,24 @@ const setField = (field: F, value: any) => {
                                 props.labeled
                                     ? (props.fieldData &&
                                           props.fieldData[field] &&
-                                          props.fieldData[field]?.label) ||
+                                          (
+                                              props.fieldData[
+                                                  field
+                                              ] as FieldOption
+                                          ).type !== 'checkbox' &&
+                                          (
+                                              props.fieldData[
+                                                  field
+                                              ] as FieldOption
+                                          ).label) ||
                                       capitalize(field)
                                     : undefined
+                            "
+                            :class="
+                                (props.fieldData &&
+                                    props.fieldData[field] &&
+                                    props.fieldData[field]?.label) ||
+                                ''
                             "
                         >
                             <PasswordInput
@@ -147,16 +181,22 @@ const setField = (field: F, value: any) => {
                                         ? ''
                                         : (props.fieldData &&
                                               props.fieldData[field] &&
-                                              props.fieldData[field]?.label) ||
+                                              (
+                                                  props.fieldData[
+                                                      field
+                                                  ] as FieldOption
+                                              ).label) ||
                                           capitalize(field)
                                 "
                                 :icon="
                                     (props.fieldData &&
                                         props.fieldData[field] &&
-                                        props.fieldData[field]?.icon) ||
+                                        (props.fieldData[field] as FieldOption)
+                                            .icon) ||
                                     ''
                                 "
                                 v-model="state[field]"
+                                no-float
                             />
                             <TextArea
                                 v-else-if="
@@ -169,12 +209,47 @@ const setField = (field: F, value: any) => {
                                         ? ''
                                         : (props.fieldData &&
                                               props.fieldData[field] &&
-                                              props.fieldData[field]?.label) ||
+                                              (
+                                                  props.fieldData[
+                                                      field
+                                                  ] as FieldOption
+                                              ).label) ||
                                           capitalize(field)
                                 "
                                 v-model="state[field]"
                                 auto-resize
                                 no-float
+                            />
+                            <DynamicFormSelect
+                                v-else-if="
+                                    props.fieldData &&
+                                    props.fieldData[field] &&
+                                    (props.fieldData[field] as FieldOption)
+                                        .type === 'select'
+                                "
+                                v-model="state[field]"
+                                :data="
+                                    props.fieldData[field] as Extract<
+                                        FieldOption,
+                                        { type: 'select' }
+                                    >
+                                "
+                                :labeled="props.labeled"
+                            />
+                            <DynamicFormCheckbox
+                                v-else-if="
+                                    props.fieldData &&
+                                    props.fieldData[field] &&
+                                    (props.fieldData[field] as FieldOption)
+                                        .type === 'checkbox'
+                                "
+                                v-model="state[field]"
+                                :data="
+                                    props.fieldData[field] as Extract<
+                                        FieldOption,
+                                        { type: 'checkbox' }
+                                    >
+                                "
                             />
                             <Input
                                 v-else
@@ -193,6 +268,7 @@ const setField = (field: F, value: any) => {
                                         props.fieldData[field]?.icon) ||
                                     ''
                                 "
+                                no-float
                             />
                         </Field>
                     </slot>

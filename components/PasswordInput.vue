@@ -3,6 +3,7 @@ import { set } from "@vueuse/core";
 import FloatLabel from "primevue/floatlabel";
 import IconField from "primevue/iconfield";
 import InputIcon from "primevue/inputicon";
+import type { Maybe } from "yup";
 
 const modelValue = defineModel<string>();
 
@@ -21,11 +22,17 @@ const {
     size?: "large" | "small";
 }>();
 
-const provided_name = inject<string>("form-name");
+const provided_name = inject<Maybe<string>>("form-name", undefined);
 const name = computed(() => provided_name || _name);
 
-const provided_loading = inject<globalThis.Ref<boolean>>("form-loading");
-const provided_disabled = inject<ComputedRef<boolean>>("form-disabled");
+const provided_loading = inject<Maybe<globalThis.Ref<boolean>>>(
+    "form-loading",
+    undefined
+);
+const provided_disabled = inject<Maybe<ComputedRef<boolean>>>(
+    "form-disabled",
+    undefined
+);
 const disabled = computed(
     () => provided_disabled?.value || provided_loading?.value || _disabled
 );

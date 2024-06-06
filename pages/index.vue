@@ -8,9 +8,9 @@ definePageMeta({});
 const route = useRoute();
 const ischilderoute = computed(() => route.fullPath !== "/");
 
-const { state, error, isLoading } = useAsyncStateTimeout(
+const { state, error, isLoading, isReady } = useAsyncStateTimeout(
     async () => {
-        await promiseTimeout(5000);
+        await promiseTimeout(500);
         return true;
     },
     false,
@@ -26,6 +26,7 @@ const { state, error, isLoading } = useAsyncStateTimeout(
         <Loader
             :finished="!isLoading"
             no-fill
+            v-if="!ischilderoute"
         >
             <div
                 class="text-green-500"
@@ -49,7 +50,7 @@ const { state, error, isLoading } = useAsyncStateTimeout(
                 </div>
             </PrimePanel>
         </template>
-        <NuxtPage />
+        <NuxtPage v-else />
     </Fill>
 </template>
 

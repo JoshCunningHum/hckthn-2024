@@ -1,26 +1,27 @@
 <script lang="ts" setup generic="T extends RoutesNamesList, P extends string">
+import { login_schema as schema, type User } from "@/schemas/user";
 import type { NuxtRoute } from "@typed-router/__router";
 import type { RoutesNamesList } from "@typed-router/__routes";
+import { useToast } from "primevue/usetoast";
+import * as yup from "yup";
+import { useAsyncStateTimeout } from "../composables/AsyncStateTimeout";
 import {
+    login,
     type LoginHandler,
     type LoginParams,
-    login,
 } from "../controllers/auth.sqlite";
-import { login_schema as schema, type User } from "@/schemas/user";
-import { useToast } from "primevue/usetoast";
 
 const { redirect = "/", handler = login } = defineProps<{
     register?: NuxtRoute<T, P>;
     redirect?: NuxtRoute<T, P>;
     handler?: LoginHandler;
+    timeout?: number;
 }>();
 
-const state = reactive({
-    username: "",
-    password: "",
-});
-
 const { login: loginsession } = useUserSession();
+
+// Routes
+const router = useRouter();
 
 // Emits
 const emits = defineEmits<{
@@ -46,10 +47,11 @@ const onSuccess = (u: User) => {
         life: 3000,
     });
     emits("success", {
-        password: state.password,
-        username: state.username,
+        password: u.password,
+        username: u.username,
     });
     loginsession(u);
+    router.push(redirect);
 };
 
 const {
@@ -57,19 +59,25 @@ const {
     isReady,
     error,
     execute: submit,
-    state: loginresponse,
-} = useAsyncState(
-    async () => {
-        const result = await handler(state);
+    state: response,
+    then,
+} = useAsyncStateTimeout(
+    async (value: yup.InferType<typeof schema>) => {
+        try {
+            const result = await handler(value);
 
-        if ("error" in result) onError(result.error);
-        else onSuccess(result);
+            if ("error" in result) onError(result.error);
+            else onSuccess(result);
 
-        return result;
+            return result;
+        } catch (error: Error) {
+            onError(error.message);
+        }
     },
     null,
     {
         immediate: false,
+        timeout: 15000,
     }
 );
 
@@ -82,43 +90,28 @@ provide("form-loading", isLoading);
         header="Login"
         class="dmsans bg-opacity-70 bg-stone-900 max-w-fit"
     >
-        <Form
+        <DynamicForm
             :schema="schema"
-            :state="state"
+            :isLoading="isLoading"
             @submit="submit"
-            class="flex flex-col gap-1"
-            v-slot="{ errors, reset }"
+            submit-label="Login"
+            :field-data="{
+                username: {
+                    icon: 'pi-user',
+                },
+                password: {
+                    type: 'password',
+                },
+            }"
         >
-            <Field name="username">
-                <Input
-                    label="Username"
-                    icon="pi pi-user"
-                    v-model="state.username"
-                />
-            </Field>
-
-            <Field name="password">
-                <PasswordInput
-                    label="Password"
-                    name="password"
-                    v-model="state.password"
-                />
-            </Field>
-            <PrimeButton
-                label="Login"
-                color="green"
-                severity="success"
-                type="submit"
-                :loading="isLoading"
-            />
-            <Anchor
-                v-if="!!register"
-                :to="register"
-                class="ml-auto"
-            >
-                or register here
-            </Anchor>
-        </Form>
+        </DynamicForm>
+        <Anchor
+            v-if="!!register"
+            :to="register"
+            class="ml-auto"
+        >
+            or register here
+        </Anchor>
     </PrimePanel>
 </template>
 
