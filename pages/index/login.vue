@@ -3,7 +3,6 @@ import { type LoginParams } from "../../controllers/auth.sqlite";
 
 const onlogin = ({ password, email }: LoginParams) => {
     // Refresh the page
-    location.reload();
 };
 </script>
 
@@ -15,6 +14,7 @@ const onlogin = ({ password, email }: LoginParams) => {
         <Login
             @success="onlogin"
             register="/register"
+            redirect="/home"
         />
     </Fill>
 </template>

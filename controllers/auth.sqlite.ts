@@ -13,7 +13,17 @@ export type LoginParams = User;
 export type LoginHandler = (param: LoginParams) => Promise<LoginResponse>;
 
 export const login: LoginHandler = async ({ password, email }) => {
-    throw new Error(`Not implemented yet`);
+    const res = await fetch(useBackendUrl() + "/auth/login/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+        },
+        body: jsonToUrlEncoded({ email, password }),
+    });
+
+    if (res.status !== 201) return { error: "Login Credentials Invalid" };
+
+    return { email, password: "" };
 };
 
 //#region Register
@@ -31,5 +41,16 @@ export type RegisterHandler = (
 ) => Promise<RegisterResponse>;
 
 export const register: RegisterHandler = async (params) => {
-    throw new Error(`Not implemented yet`);
+    const res = await fetch(useBackendUrl() + "/auth/signup/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+        },
+        body: jsonToUrlEncoded(params),
+    });
+
+    // @ts-expect-error trust me bro
+    if (res.status !== 200) return { error: res.message };
+
+    return params;
 };

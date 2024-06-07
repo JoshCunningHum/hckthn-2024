@@ -18,6 +18,8 @@ export const login_schema = yup.object({
 });
 
 // For registration
+type AilmentHistory = "status unknown" | "yes" | "no";
+
 export type InsertUser = {
     email: string;
     password: string;
@@ -25,14 +27,22 @@ export type InsertUser = {
     first_name: string;
     last_name: string;
 
-    age?: number;
-    nationality?: string;
-    province?: string;
-    city?: string;
-    zipcode?: string;
-    phone?: string;
-    height?: number;
-    weight?: number;
+    age: number;
+    nationality: string;
+    province: string;
+    city: string;
+    zipcode: string;
+    phone: string;
+    height: number;
+    weight: number;
+
+    // History
+    is_diabetic: AilmentHistory;
+    is_hypertensive: AilmentHistory;
+    is_smoker: AilmentHistory;
+    last_checkup: string;
+    medications: string;
+    history: string;
 };
 
 export const register_schema = yup.object({
@@ -48,13 +58,44 @@ export const register_schema = yup.object({
     first_name: yup.string().required("First name is required"),
     last_name: yup.string().required("Last name is required"),
 
-    age: yup.number().min(0, "Please input a valid age"),
-    nationality: yup.string(),
-    province: yup.string(),
-    city: yup.string(),
-    zipcode: yup.string(),
+    age: yup
+        .number()
+        .min(0, "Please input a valid age")
+        .required("Age is required"),
+    nationality: yup.string().required("Nationality is required"),
+    province: yup.string().required("Province is required"),
+    city: yup.string().required("City is required"),
+    zipcode: yup.string().required("Zipcode is required"),
 
-    phone: yup.string(),
-    height: yup.number().min(0, "Please input a valid height"),
-    weight: yup.number().min(0, "Please input a valid width"),
+    phone: yup.string().required("Phone No. is required"),
+    height: yup
+        .number()
+        .min(1, "Please input a valid height")
+        .required("Height is required"),
+    weight: yup
+        .number()
+        .min(1, "Please input a valid width")
+        .required("Weight is required"),
+
+    is_diabetic: yup
+        .string()
+        .required()
+        .oneOf(["status unknown", "yes", "no"])
+        .default("status unknown"),
+    is_hypertensive: yup
+        .string()
+        .required()
+        .oneOf(["status unknown", "yes", "no"])
+        .default("status unknown"),
+    is_smoker: yup
+        .string()
+        .required()
+        .oneOf(["status unknown", "yes", "no"])
+        .default("status unknown"),
+    last_checkup: yup.string().required("Last checkup is required"),
+    medications: yup
+        .string()
+        .required("Medications are required")
+        .default(`None`),
+    history: yup.string().required(`Additional details are required`),
 });

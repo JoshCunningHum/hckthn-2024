@@ -43,7 +43,7 @@ const {
     validateOnMount: false,
 });
 
-const validateField = async (field: string, value: any) => {
+const validateField = (field: string, value: any) => {
     setFieldValue(field, value, true);
 };
 

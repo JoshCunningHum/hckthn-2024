@@ -70,8 +70,8 @@ const {
             else onSuccess(result);
 
             return result;
-        } catch (error: Error) {
-            onError(error.message);
+        } catch (error) {
+            onError((error as Error).message);
         }
     },
     null,
@@ -90,6 +90,9 @@ provide("form-loading", isLoading);
         header="Login"
         class="dmsans bg-opacity-70 bg-section max-w-fit"
     >
+        <template #header>
+            <div class="text-3xl font-semibold text-center w-full">Login</div>
+        </template>
         <DynamicForm
             :schema="schema"
             :isLoading="isLoading"

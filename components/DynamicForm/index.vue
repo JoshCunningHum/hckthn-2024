@@ -310,8 +310,6 @@ const setField = (field: F, value: any) => {
         <slot name="actions">
             <PrimeButton
                 :label="submitLabel"
-                color="green"
-                severity="success"
                 type="submit"
                 :loading="loading"
             />

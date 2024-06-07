@@ -53,53 +53,55 @@ const {
 </script>
 
 <template>
+    <!--
+    
+    Consult Now
+    Doctors Near You
+    Dashboard
+    
+
+    -->
     <Screen>
-        <Fill center>
-            <DynamicForm
-                @submit="onsubmit"
-                :loading="isLoading"
-                :schema="schema"
-                labeled
-                submit-label="Login"
-                :field-data="{
-                    password: {
-                        icon: 'pi-key',
-                        type: 'password',
-                    },
-                    email: {
-                        icon: 'pi-user',
-                    },
-                    subscribe: {
-                        label: 'Subscribe to email service',
-                        type: 'checkbox',
-                    },
-                    gender: {
-                        type: 'select',
-                        options: ['Male', 'Female', 'Other'],
-                    },
-                    age: {
-                        type: 'number',
-                    },
-                }"
-                class="gap-2"
-            >
-                <template #subscribe-field="{ state, set, validate, error }">
-                    <div>
-                        <ToggleButton
-                            :model-value="state"
-                            @update:model-value="
-                                (v: boolean) => {
-                                    set(!!v);
-                                    validate();
-                                }
-                            "
-                            onLabel="Subscribed"
-                            offLabel="Subscribe"
-                        />
-                        <div class="text-red-500 text-sm">{{ error }}</div>
+        <Fill
+            center
+            flex-col
+        >
+            <PrimeButton
+                label="Logout"
+                severity="secondary"
+                @click="logout"
+                class="absolute top-5 right-5"
+            />
+            <Logo class="mix-blend-multiply" />
+            <div class="flex gap-2 font-semibold dmsans">
+                <PrimeButton
+                    class="py-16 font-semibold"
+                    severity="danger"
+                    @click="router.push('/consult')"
+                    >Consult Now</PrimeButton
+                >
+                <div class="flex flex-col gap-2">
+                    <div class="flex gap-2">
+                        <PrimeButton
+                            class="py-6 font-semibold"
+                            severity="help"
+                            >Doctors Near You</PrimeButton
+                        >
+                        <PrimeButton
+                            class="py-6 font-semibold"
+                            severity="info"
+                            >Dashboard</PrimeButton
+                        >
                     </div>
-                </template>
-            </DynamicForm>
+                    <div class="flex gap-2">
+                        <PrimeButton
+                            class="py-6 w-full text-center font-semibold flex justify-center"
+                            severity="warning"
+                            >Consultation History</PrimeButton
+                        >
+                    </div>
+                </div>
+            </div>
         </Fill>
     </Screen>
 </template>

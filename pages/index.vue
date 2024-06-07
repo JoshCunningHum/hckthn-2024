@@ -1,57 +1,66 @@
 <script lang="ts" setup>
-import { useRoute } from "../.nuxt/typed-router/__useTypedRoute";
-import { definePageMeta } from "../.nuxt/typed-router/__definePageMeta";
-import { promiseTimeout } from "@vueuse/core";
+const router = useRouter();
 
-definePageMeta({});
+const register = () => {
+    router.push(`/register`);
+};
+
+const login = () => {
+    router.push(`/login`);
+};
 
 const route = useRoute();
-const ischilderoute = computed(() => route.fullPath !== "/");
-
-const { state, error, isLoading, isReady } = useAsyncStateTimeout(
-    async () => {
-        await promiseTimeout(500);
-        return true;
-    },
-    false,
-    { timeout: 1000 }
-);
+const ischildroute = computed(() => route.fullPath === "/");
 </script>
 
 <template>
-    <Fill
-        class="bg-ground dmsans"
-        center
-    >
-        <Loader
-            :finished="!isLoading"
-            no-fill
-            v-if="!ischilderoute"
+    <Screen>
+        <Fill
+            center
+            v-if="ischildroute"
         >
-            <div
-                class="text-green-500"
-                v-if="error !== 'Timeout'"
+            <Hero
+                image="/hero2.jpg"
+                class="w-full"
             >
-                Ready
-            </div>
-            <div
-                v-else
-                class="text-red-500"
-            >
-                Timeout
-            </div>
-        </Loader>
-
-        <template v-if="!ischilderoute && false">
-            <PrimePanel>
-                <div class="flex flex-col gap-2">
-                    <Anchor to="/login">Login</Anchor>
-                    <Anchor to="/register">Register</Anchor>
-                </div>
-            </PrimePanel>
-        </template>
+                <template #default>
+                    <div
+                        class="flex flex-col gap-2 justify-center text-center md:text-left overflow-hidden"
+                    >
+                        <div
+                            class="text-3xl md:text-5xl font-bold dmsans w-full md:w-fit"
+                        >
+                            Unlock
+                            <span class="text-[#b92f2f]">Expert Guidance</span>
+                            at
+                            <br />
+                            Your Fingertips
+                        </div>
+                        <div class="text-sm md:text-base">
+                            Experience personalized, AI-powered consultations
+                            tailored to your unique needs
+                        </div>
+                        <div
+                            class="flex gap-2 items-center justify-center md:justify-start"
+                        >
+                            <PrimeButton
+                                severity="success"
+                                @click="register"
+                                >Register Now</PrimeButton
+                            >
+                            <PrimeDivider layout="vertical" />
+                            <PrimeButton
+                                severity="primary"
+                                @click="login"
+                                >Login</PrimeButton
+                            >
+                        </div>
+                    </div>
+                </template>
+            </Hero>
+        </Fill>
         <NuxtPage v-else />
-    </Fill>
+    </Screen>
 </template>
 
 <style lang="scss" scoped></style>
