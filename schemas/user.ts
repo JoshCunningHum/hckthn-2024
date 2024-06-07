@@ -4,6 +4,8 @@ import * as yup from "yup";
 export type User = {
     email: string;
     password: string;
+    id: number;
+    first_name: string;
 };
 
 export const login_schema = yup.object({

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { useConsultStore } from "../stores/consult";
-import { useAsyncStateTimeout } from "../composables/AsyncStateTimeout";
+import { useConsultStore } from "@/stores/consult";
+import { useAsyncStateTimeout } from "@/composables/AsyncStateTimeout";
 
 const conStore = useConsultStore();
 const { req, messsages } = storeToRefs(conStore);

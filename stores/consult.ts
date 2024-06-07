@@ -1,22 +1,18 @@
 import { promiseTimeout } from "@vueuse/core";
 import { defineStore } from "pinia";
+import type { ChatSession } from "./history";
 
 type ChatMessage = {
-    session: string;
+    session?: string;
     role: "user" | "system";
     content: string;
-    timestamp: string;
-};
-
-type ChatSession = {
-    user: number;
-    session_id: string;
-    created_at: string;
+    timestamp?: string;
 };
 
 export const useConsultStore = defineStore("Consult", () => {
     const req = ref("");
     const isrequesting = ref(false);
+    const current_session = ref<string>();
 
     type Message = {
         text: string;
@@ -28,14 +24,40 @@ export const useConsultStore = defineStore("Consult", () => {
     const reset = () => {
         req.value = "";
         isrequesting.value = false;
+        current_session.value = "";
         messsages.value.splice(0);
     };
 
-    const onstartnewconvo = async () => {
-        // Code for starting a new conversation
+    const loadSession = async (sessionId: string) => {
+        reset();
+
+        const res = await fetch(useBackendUrl() + "/", {
+            method: "POST",
+            headers: {
+                "Content-Type": 'application/json; charset=UTF-8"',
+            },
+            body: JSON.stringify({ sessionId }),
+        });
+
+        const { messages, session } = (await res.json()) as {
+            messages: ChatMessage[];
+            session: ChatSession;
+        };
+
+        current_session.value = session.session_id;
+        messsages.value.push(
+            ...messages.map((m) => ({
+                text: m.content,
+                isAI: m.role === "system",
+            }))
+        );
     };
 
     const ask = async () => {
+        const { state } = useUserSession();
+
+        if (!state.value) return;
+
         const text = req.value;
 
         if (!text) return;
@@ -48,11 +70,45 @@ export const useConsultStore = defineStore("Consult", () => {
             headers: {
                 "Content-Type": 'application/json; charset=UTF-8"',
             },
-            body: JSON.stringify({ prompt: text }),
+            body: JSON.stringify({
+                prompt: text,
+            }),
         });
 
-        const { response } = (await res.json()) as { response: string };
-        messsages.value.push({ text: response, isAI: true });
+        const ai_response = (await res.json()) as { response: string };
+
+        // Save result of AI and User
+        const save_ai = await fetch(
+            useBackendUrl() + "/session_context/save_chat_message/",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": 'application/json; charset=UTF-8"',
+                },
+                body: JSON.stringify({
+                    user_id: state.value.id,
+                    role: "system",
+                    content: ai_response.response,
+                }),
+            }
+        );
+
+        const save_user = await fetch(
+            useBackendUrl() + "/session_context/save_chat_message/",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": 'application/json; charset=UTF-8"',
+                },
+                body: JSON.stringify({
+                    user_id: state.value.id,
+                    role: "user",
+                    content: text,
+                }),
+            }
+        );
+
+        messsages.value.push({ text: ai_response.response, isAI: true });
     };
 
     return {
@@ -60,5 +116,7 @@ export const useConsultStore = defineStore("Consult", () => {
         messsages,
         ask,
         reset,
+        current_session,
+        loadSession,
     };
 });

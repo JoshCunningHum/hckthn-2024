@@ -23,7 +23,9 @@ export const login: LoginHandler = async ({ password, email }) => {
 
     if (res.status !== 201) return { error: "Login Credentials Invalid" };
 
-    return { email, password: "" };
+    const { email: em, user_id } = await res.json();
+
+    return { email, password: "", id: user_id, first_name: "" };
 };
 
 //#region Register
@@ -32,7 +34,7 @@ export type RegisterResponse =
     | {
           error: string;
       }
-    | User;
+    | InsertUser;
 
 export type RegisterParams = InsertUser;
 
